@@ -5,6 +5,7 @@ const fetchJSON = async (endpoint: string, options: RequestInit = {}) => {
     ...options,
     headers: {
       'Content-Type': 'application/json',
+      Accept: 'application/json',
     },
   });
   return response.json();
