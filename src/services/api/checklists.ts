@@ -1,13 +1,18 @@
-import { fetchJSON } from '../fetchUtil';
+import type { CheckListBase } from '@/types/checkList';
+import { fetchJSON, postJSON } from '../fetchUtil';
 
-const getChecklists = async () => {
-  const response = await fetchJSON('/checklists');
-  return response;
+const getCheckLists = async (filters: Record<string, string>) => {
+  const filterParams = Object.keys(filters).length > 0 ? `?${new URLSearchParams(filters)}` : '';
+
+  return fetchJSON(`/checklists${filterParams}`);
 };
 
-const getChecklist = async (id: string) => {
-  const response = await fetchJSON(`/checklists/${id}`);
-  return response;
+const getCheckList = async (id: number) => {
+  return fetchJSON(`/checklists/${id}`);
 };
 
-export { getChecklists, getChecklist };
+const createCheckList = async (checkList: CheckListBase) => {
+  return postJSON('/checklists', checkList);
+};
+
+export { getCheckLists, getCheckList, createCheckList };

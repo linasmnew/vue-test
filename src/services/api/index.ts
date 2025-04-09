@@ -1,3 +1,3 @@
-import { getChecklists, getChecklist } from './checklists';
+import { getCheckLists, getCheckList, createCheckList } from './checkLists';
 
-export { getChecklists, getChecklist };
+export { getCheckLists, getCheckList, createCheckList };
