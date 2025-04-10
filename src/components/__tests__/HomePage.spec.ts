@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest'
 
 import { mount } from '@vue/test-utils'
-import TheWelcome from '../TheWelcome.vue'
+import HomePage from '../HomePage.vue'
 
-describe('TheWelcome', () => {
+describe('HomePage', () => {
   it('renders properly', () => {
-    const wrapper = mount(TheWelcome)
+    const wrapper = mount(HomePage)
     expect(wrapper.html()).toMatchSnapshot()
   })
 })

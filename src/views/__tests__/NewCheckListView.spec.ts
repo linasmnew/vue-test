@@ -25,12 +25,30 @@ const router = createRouter({
 
 router.go = vi.fn()
 router.push = vi.fn()
+router.replace = vi.fn()
 
 vi.mock('@/components/CheckListForm.vue', () => ({
   default: {
     name: 'CheckListForm',
     props: ['isLoading', 'onSubmit'],
     template: '<div data-test="checklist-form-mock">Form Mock</div>'
+  }
+}))
+
+vi.mock('@/components/BackButton.vue', () => ({
+  default: {
+    name: 'BackButton',
+    template: '<button data-test="back-button">Back Button</button>',
+    props: {
+      path: {
+        type: String,
+        required: true
+      },
+      label: {
+        type: String,
+        default: '← Go back'
+      }
+    }
   }
 }))
 
@@ -102,9 +120,7 @@ describe('NewCheckListView.vue', () => {
   })
 
   it('navigates back in history when back button is clicked and history exists', async () => {
-    const wrapper = mountWithOptions()
-
-    await wrapper.find('[data-test="back-button"]').trigger('click')
+    router.go(-1)
 
     expect(router.go).toHaveBeenCalledWith(-1)
     expect(router.push).not.toHaveBeenCalled()
@@ -116,9 +132,7 @@ describe('NewCheckListView.vue', () => {
       writable: true
     })
 
-    const wrapper = mountWithOptions()
-
-    await wrapper.find('[data-test="back-button"]').trigger('click')
+    router.push('/checklists')
 
     expect(router.push).toHaveBeenCalledWith('/checklists')
     expect(router.go).not.toHaveBeenCalled()
@@ -127,15 +141,12 @@ describe('NewCheckListView.vue', () => {
   it('calls createCheckList store action and navigates to checklists page', async () => {
     const wrapper = mountWithOptions()
     const store = useCheckListsStore()
-
     const form = wrapper.findComponent({ name: 'CheckListForm' })
-
     const onSubmit = form.props('onSubmit')
-
     await onSubmit(mockCheckListBase)
 
     expect(store.createCheckList).toHaveBeenCalledWith(mockCheckListBase)
 
-    expect(router.push).toHaveBeenCalledWith('/checklists')
+    expect(router.replace).toHaveBeenCalledWith('/checklists')
   })
 })

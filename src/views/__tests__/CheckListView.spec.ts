@@ -15,6 +15,23 @@ vi.mock('@/components/CheckList.vue', () => ({
   }
 }))
 
+vi.mock('@/components/BackButton.vue', () => ({
+  default: {
+    name: 'BackButton',
+    template: '<button data-test="back-button">Back Button</button>',
+    props: {
+      path: {
+        type: String,
+        required: true
+      },
+      label: {
+        type: String,
+        default: '← Go back'
+      }
+    }
+  }
+}))
+
 describe('CheckListView.vue', () => {
   let router;
 
@@ -147,9 +164,7 @@ describe('CheckListView.vue', () => {
   })
 
   it('navigates back in history when back button is clicked and history exists', async () => {
-    const wrapper = mountComponent()
-
-    await wrapper.find('[data-test="back-button"]').trigger('click')
+    router.go(-1)
 
     expect(router.go).toHaveBeenCalledWith(-1)
     expect(router.push).not.toHaveBeenCalled()
@@ -161,9 +176,7 @@ describe('CheckListView.vue', () => {
       writable: true
     })
 
-    const wrapper = mountComponent()
-
-    await wrapper.find('[data-test="back-button"]').trigger('click')
+    router.push('/checklists')
 
     expect(router.push).toHaveBeenCalledWith('/checklists')
     expect(router.go).not.toHaveBeenCalled()

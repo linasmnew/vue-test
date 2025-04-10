@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { useCheckListsStore } from '../stores/checkLists'
 import { ref, onMounted, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter, useRoute } from 'vue-router'
+import { useCheckListsStore } from '../stores/checkLists'
 import CheckList from '@/components/CheckList.vue'
+import BaseButton from '@/components/BaseButton.vue'
 
 const route = useRoute()
 const selectedStatus = ref('')
@@ -41,13 +42,14 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="checklists">
+  <div class="container">
     <div class="checklists-header">
-      <div>
-        <button data-test="add-checklist-button" @click="handleNewCheckListClick">
-          Add check list
-        </button>
-      </div>
+      <BaseButton
+        label="Add check list"
+        :onClick="handleNewCheckListClick"
+        data-test="add-checklist-button"
+        primary
+      />
       <div class="filter-container">
         <label class="filter-label" for="status">Filter by status:</label>
         <select id="status" data-test="status-filter" v-model="selectedStatus">
@@ -57,16 +59,18 @@ onMounted(() => {
         </select>
       </div>
     </div>
-    <div v-if="isLoading" data-test="loading-indicator">Loading...</div>
-    <div v-else-if="error" data-test="error-message">Error: {{ error.message }}</div>
-    <div v-else data-test="checklists-container">
-      <CheckList
-        v-for="checkList in checkLists"
-        :key="checkList.id"
-        :checkList="checkList"
-        data-test="checklist-item"
-        @click="handleCheckListClick(checkList.id)"
-      />
+    <div class="checklists-container">
+      <div v-if="isLoading" data-test="loading-indicator">Loading...</div>
+      <div v-else-if="error" data-test="error-message">Error: {{ error.message }}</div>
+      <div v-else data-test="checklists-container">
+        <CheckList
+          v-for="checkList in checkLists"
+          :key="checkList.id"
+          :checkList="checkList"
+          data-test="checklist-item"
+          @click="handleCheckListClick(checkList.id)"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -77,36 +81,17 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
 }
-
 .filter-container {
   display: flex;
   justify-content: flex-end;
 }
-
 .filter-label {
-  margin-right: 0.5rem;
+  padding-right: 0.5rem;
 }
-
+.checklists-container {
+  margin-top: 20px;
+}
 .checklist {
   cursor: pointer;
-}
-
-.status-label-pass {
-  color: green;
-}
-
-.status-label-fail {
-  color: red;
-}
-button {
-  border: none;
-  cursor: pointer;
-  padding: 10px;
-  border-radius: 5px;
-  background-color: #184f91;
-  color: white;
-}
-button:hover {
-  background-color: #5ab031;
 }
 </style>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { CheckListBase } from '@/types/checkList'
+import BaseButton from '@/components/BaseButton.vue'
 
 const props = defineProps<{
   isLoading: boolean
@@ -66,10 +67,13 @@ const handleCheckListSubmit = async () => {
           ></textarea>
         </div>
         <div class="form-group">
-          <button type="submit" data-test="submit-button" :disabled="props.isLoading">
-            <span v-if="props.isLoading">Saving...</span>
-            <span v-else>Save</span>
-          </button>
+          <BaseButton
+            type="submit"
+            :loading="props.isLoading"
+            label="Save"
+            data-test="submit-button"
+            primary
+          />
         </div>
       </form>
     </div>
@@ -77,22 +81,6 @@ const handleCheckListSubmit = async () => {
 </template>
 
 <style scoped>
-.checklists a {
-  text-decoration: none;
-  color: #184f91;
-}
-.back-button {
-  background: none;
-  border: none;
-  color: #184f91;
-  cursor: pointer;
-  padding: 5px 0;
-  font-size: 0.9rem;
-  text-align: left;
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-}
 .form-group {
   display: flex;
   flex-direction: column;
@@ -104,19 +92,5 @@ const handleCheckListSubmit = async () => {
   border: 1px solid #ccc;
   border-radius: 5px;
   padding: 10px;
-}
-.form-group button {
-  border: none;
-  cursor: pointer;
-  padding: 10px;
-  border-radius: 5px;
-  background-color: #184f91;
-  color: white;
-}
-.form-group button:hover {
-  background-color: #5ab031;
-}
-.form-group button:disabled {
-  cursor: not-allowed;
 }
 </style>

@@ -20,12 +20,12 @@
 h1 {
   font-size: 2rem;
   font-weight: 600;
-  color: #184f91;
+  color: var(--color-heading);
 }
 p {
   margin-top: 20px;
   font-size: 1.2rem;
   font-weight: 500;
-  color: #184f91;
+  color: var(--color-primary);
 }
 </style>

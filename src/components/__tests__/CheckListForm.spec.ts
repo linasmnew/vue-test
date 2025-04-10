@@ -85,7 +85,7 @@ describe('CheckListForm.vue', () => {
 
     const submitButton = wrapper.find('[data-test="submit-button"]')
     expect(submitButton.attributes('disabled')).toBeDefined()
-    expect(submitButton.text()).toBe('Saving...')
+    expect(submitButton.text()).toBe('Loading...')
   })
 
   it('shows Save text on button when not loading', () => {

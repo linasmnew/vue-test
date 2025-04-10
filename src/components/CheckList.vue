@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { CheckList } from '@/types/checkList'
+
 const props = defineProps<{
   checkList: CheckList
   onClick?: (id: number) => void
@@ -13,14 +14,7 @@ const handleClick = () => {
 </script>
 
 <template>
-  <div
-    class="checklist"
-    :class="{
-      'status-pass': checkList.status === 'Pass',
-      'status-fail': checkList.status === 'Fail',
-    }"
-    @click="handleClick"
-  >
+  <div class="checklist" @click="handleClick">
     <p><span class="checklist-label">Date:</span>{{ checkList.date }}</p>
     <p>
       <span class="checklist-label">Status:</span>
@@ -46,18 +40,19 @@ const handleClick = () => {
   border: 1px solid #e5e7eb;
   box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.03);
   padding: 10px;
-  margin-top: 20px;
   margin-bottom: 20px;
   border-radius: 8px;
 }
+.checklist:last-child {
+  margin-bottom: 0;
+}
 .checklist-label {
-  margin-right: 5px;
+  padding-right: 5px;
 }
 .status-label-pass {
-  color: green;
+  color: var(--color-success);
 }
-
 .status-label-fail {
-  color: red;
+  color: var(--color-error);
 }
 </style>
