@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import IconSpinner from './icons/IconSpinner.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -43,7 +44,9 @@ const handleClick = () => {
     :data-test="dataTestId"
     @click="handleClick"
   >
-    <span v-if="loading">Loading...</span>
+    <span v-if="loading">
+      <IconSpinner width="14" height="14" />
+    </span>
     <span v-else>{{ label }}</span>
   </button>
 </template>

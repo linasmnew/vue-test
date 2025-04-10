@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import BaseButton from '../BaseButton.vue'
+import IconSpinner from '../icons/IconSpinner.vue'
 
 describe('BaseButton', () => {
   it('renders properly with label', () => {
@@ -21,7 +22,8 @@ describe('BaseButton', () => {
         loading: true
       }
     })
-    expect(wrapper.text()).toContain('Loading...')
+    expect(wrapper.findComponent(IconSpinner).exists()).toBe(true)
+    expect(wrapper.text()).not.toContain('Test Button')
     expect(wrapper.find('button').attributes('disabled')).toBeDefined()
   })
 

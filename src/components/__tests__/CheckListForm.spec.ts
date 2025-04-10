@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import CheckListForm from '../CheckListForm.vue'
 import { Status } from '@/types/checklist'
+import IconSpinner from '../icons/IconSpinner.vue'
 
 describe('CheckListForm.vue', () => {
   const defaultProps = {
@@ -85,7 +86,8 @@ describe('CheckListForm.vue', () => {
 
     const submitButton = wrapper.find('[data-test="submit-button"]')
     expect(submitButton.attributes('disabled')).toBeDefined()
-    expect(submitButton.text()).toBe('Loading...')
+    expect(submitButton.findComponent(IconSpinner).exists()).toBe(true)
+    expect(submitButton.text()).not.toBe('Save')
   })
 
   it('shows Save text on button when not loading', () => {
@@ -96,5 +98,6 @@ describe('CheckListForm.vue', () => {
     const submitButton = wrapper.find('[data-test="submit-button"]')
     expect(submitButton.attributes('disabled')).toBeUndefined()
     expect(submitButton.text()).toBe('Save')
+    expect(submitButton.findComponent(IconSpinner).exists()).toBe(false)
   })
 })

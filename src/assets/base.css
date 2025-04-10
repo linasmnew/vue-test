@@ -8,6 +8,7 @@
   --c-success: green;
   --c-error: red;
   --c-gray: #ccc;
+  --c-gray-dark: #333;
 }
 
 /* semantic color variables for this project */
@@ -19,6 +20,7 @@
   --color-secondary: var(--c-green);
   --color-button-text: var(--c-white);
   --color-button-disabled: var(--c-gray);
+  --color-button-spinner: var(--c-gray-dark);
   --color-success: var(--c-success);
   --color-error: var(--c-error);
 }
