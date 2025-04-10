@@ -25,7 +25,13 @@ const handleBackButtonClick = () => {
 </script>
 
 <template>
-  <BaseButton :label="label" :onClick="handleBackButtonClick" data-test="back-button" naked />
+  <BaseButton
+    size="small"
+    :label="label"
+    :onClick="handleBackButtonClick"
+    data-test="back-button"
+    naked
+  />
 </template>
 
 <style scoped>

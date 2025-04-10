@@ -13,11 +13,13 @@ const props = withDefaults(
     type?: 'button' | 'submit'
     dataTestId?: string
     loading?: boolean
+    size?: 'small' | 'medium' | 'large'
   }>(),
   {
     type: 'button',
     dataTestId: 'button',
     loading: false,
+    size: 'medium',
   },
 )
 
@@ -26,6 +28,13 @@ const buttonType = computed(() => {
   if (props.secondary) return 'secondary'
   if (props.naked) return 'naked'
   return 'primary'
+})
+
+const buttonSize = computed(() => {
+  if (props.size === 'small') return 'small'
+  if (props.size === 'medium') return 'medium'
+  if (props.size === 'large') return 'large'
+  return 'small'
 })
 
 const handleClick = () => {
@@ -38,7 +47,7 @@ const handleClick = () => {
 <template>
   <button
     class="button"
-    :class="buttonType"
+    :class="[buttonType, `button-size-${buttonSize}`]"
     :disabled="disabled || loading"
     :type="type"
     :data-test="dataTestId"
@@ -55,9 +64,6 @@ const handleClick = () => {
 .button {
   border: none;
   cursor: pointer;
-  padding: 5px 0;
-  font-size: 1rem;
-  padding: 10px;
   border-radius: 5px;
 }
 .button:disabled {
@@ -84,5 +90,17 @@ const handleClick = () => {
 .naked {
   background: none;
   color: var(--color-primary);
+}
+.button-size-small {
+  padding: 5px 10px;
+  font-size: 1rem;
+}
+.button-size-medium {
+  padding: 10px 20px;
+  font-size: 1.1rem;
+}
+.button-size-large {
+  padding: 15px 30px;
+  font-size: 1.2rem;
 }
 </style>

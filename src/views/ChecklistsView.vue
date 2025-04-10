@@ -45,6 +45,7 @@ onMounted(() => {
   <div class="container">
     <div class="checklists-header">
       <BaseButton
+        size="medium"
         label="Add check list"
         :onClick="handleNewCheckListClick"
         data-test="add-checklist-button"

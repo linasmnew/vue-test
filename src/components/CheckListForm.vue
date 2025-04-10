@@ -73,6 +73,7 @@ const handleCheckListSubmit = async () => {
             label="Save"
             data-test="submit-button"
             primary
+            size="medium"
           />
         </div>
       </form>
@@ -85,6 +86,9 @@ const handleCheckListSubmit = async () => {
   display: flex;
   flex-direction: column;
   margin-bottom: 10px;
+}
+.form-group button {
+  margin-top: 10px;
 }
 .form-group input,
 .form-group select,

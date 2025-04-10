@@ -97,4 +97,43 @@ describe('BaseButton', () => {
     })
     expect(wrapper.attributes('data-test')).toBe('custom-button')
   })
+
+  it('applies medium size by default', () => {
+    const wrapper = mount(BaseButton, {
+      props: {
+        label: 'Test Button'
+      }
+    })
+    expect(wrapper.classes()).toContain('button-size-medium')
+  })
+
+  it('applies small size when size prop is small', () => {
+    const wrapper = mount(BaseButton, {
+      props: {
+        label: 'Test Button',
+        size: 'small'
+      }
+    })
+    expect(wrapper.classes()).toContain('button-size-small')
+  })
+
+  it('applies medium size when size prop is medium', () => {
+    const wrapper = mount(BaseButton, {
+      props: {
+        label: 'Test Button',
+        size: 'medium'
+      }
+    })
+    expect(wrapper.classes()).toContain('button-size-medium')
+  })
+
+  it('applies large size when size prop is large', () => {
+    const wrapper = mount(BaseButton, {
+      props: {
+        label: 'Test Button',
+        size: 'large'
+      }
+    })
+    expect(wrapper.classes()).toContain('button-size-large')
+  })
 })
