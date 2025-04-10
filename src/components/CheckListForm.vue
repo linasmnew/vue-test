@@ -43,6 +43,7 @@ const handleCheckListSubmit = async () => {
             v-model="formValues.building"
             type="text"
             id="building"
+            placeholder="Building name"
             data-test="building-input"
             required
           />
@@ -53,6 +54,7 @@ const handleCheckListSubmit = async () => {
             v-model="formValues.inspector"
             type="text"
             id="inspector"
+            placeholder="Inspector name"
             data-test="inspector-input"
             required
           />
@@ -63,6 +65,7 @@ const handleCheckListSubmit = async () => {
             v-model="formValues.notes"
             id="notes"
             data-test="notes-input"
+            placeholder="Enter notes"
             required
           ></textarea>
         </div>
