@@ -4,9 +4,8 @@ import { useCheckListsStore } from '../checkLists'
 import { Status } from '../../types/checkList'
 import { getCheckList, getCheckLists, createCheckList as createCheckListApi } from '../../services/api'
 
-// Create a mock FetchError class to match the one in fetchUtil.ts
 class FetchError extends Error {
-  constructor(message = 'Something went wrong, please try again later', public status?: number, public details?: Record<string, unknown>) {
+  constructor(message = 'Something went wrong, please try again later', public status?: number, public details?: Record<string, string[]>) {
     super(message)
     this.name = 'CustomFetchError'
   }
@@ -75,7 +74,7 @@ describe('checkLists store', () => {
 
     it('should handle API errors properly', async () => {
       const errorMessage = 'API Error'
-      const errorDetails = { field: 'date', error: 'Invalid date format' }
+      const errorDetails = { date: ['Invalid date format'] }
       vi.mocked(getCheckLists).mockRejectedValueOnce(new FetchError(errorMessage, 400, errorDetails))
       const store = useCheckListsStore()
 
@@ -92,7 +91,7 @@ describe('checkLists store', () => {
   describe('fetchCheckList', () => {
     it('should return cached checkList if it exists and has matching ID', async () => {
       const store = useCheckListsStore()
-      // Set the existing checkList value directly
+
       store.checkList = mockCheckList
 
       await store.fetchCheckList(1)
@@ -115,7 +114,7 @@ describe('checkLists store', () => {
 
     it('should handle API errors properly', async () => {
       const errorMessage = 'API Error'
-      const errorDetails = { field: 'id', error: 'Invalid ID format' }
+      const errorDetails = { id: ['Invalid ID format'] }
       vi.mocked(getCheckList).mockRejectedValueOnce(new FetchError(errorMessage, 400, errorDetails))
       const store = useCheckListsStore()
 
@@ -154,7 +153,7 @@ describe('checkLists store', () => {
     it('should handle API errors properly', async () => {
       const store = useCheckListsStore()
       const errorMessage = 'API Error'
-      const errorDetails = { field: 'building', error: 'Building name is required' }
+      const errorDetails = { building: ['Building name is required'] }
       const newCheckList = { ...mockCheckList, id: 5 }
 
       vi.mocked(createCheckListApi).mockRejectedValueOnce(new FetchError(errorMessage, 400, errorDetails))
