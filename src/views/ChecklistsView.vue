@@ -62,7 +62,7 @@ onMounted(() => {
     </div>
     <div class="checklists-container">
       <div v-if="isLoading" data-test="loading-indicator">Loading...</div>
-      <div v-else-if="error" data-test="error-message">Error: {{ error.message }}</div>
+      <div v-else-if="error" data-test="error-message">{{ error.message }}</div>
       <div v-else data-test="checklists-container">
         <CheckList
           v-for="checkList in checkLists"

@@ -4,6 +4,14 @@ import { useCheckListsStore } from '../checkLists'
 import { Status } from '../../types/checkList'
 import { getCheckList, getCheckLists, createCheckList as createCheckListApi } from '../../services/api'
 
+// Create a mock FetchError class to match the one in fetchUtil.ts
+class FetchError extends Error {
+  constructor(message = 'Something went wrong, please try again later', public status?: number, public details?: Record<string, unknown>) {
+    super(message)
+    this.name = 'CustomFetchError'
+  }
+}
+
 vi.mock('../../services/api', () => {
   return {
     getCheckLists: vi.fn(),
@@ -67,14 +75,17 @@ describe('checkLists store', () => {
 
     it('should handle API errors properly', async () => {
       const errorMessage = 'API Error'
-      vi.mocked(getCheckLists).mockRejectedValueOnce(new Error(errorMessage))
+      const errorDetails = { field: 'date', error: 'Invalid date format' }
+      vi.mocked(getCheckLists).mockRejectedValueOnce(new FetchError(errorMessage, 400, errorDetails))
       const store = useCheckListsStore()
 
       await store.fetchCheckLists()
 
       expect(store.isLoading).toBe(false)
-      expect(store.error).toBeInstanceOf(Error)
-      expect(store.error?.message).toBe(errorMessage)
+      expect(store.error).toEqual({
+        message: errorMessage,
+        details: errorDetails,
+      })
     })
   })
 
@@ -104,14 +115,17 @@ describe('checkLists store', () => {
 
     it('should handle API errors properly', async () => {
       const errorMessage = 'API Error'
-      vi.mocked(getCheckList).mockRejectedValueOnce(new Error(errorMessage))
+      const errorDetails = { field: 'id', error: 'Invalid ID format' }
+      vi.mocked(getCheckList).mockRejectedValueOnce(new FetchError(errorMessage, 400, errorDetails))
       const store = useCheckListsStore()
 
       await store.fetchCheckList(1)
 
       expect(store.isLoading).toBe(false)
-      expect(store.error).toBeInstanceOf(Error)
-      expect(store.error?.message).toBe(errorMessage)
+      expect(store.error).toEqual({
+        message: errorMessage,
+        details: errorDetails,
+      })
     })
   })
 
@@ -140,15 +154,18 @@ describe('checkLists store', () => {
     it('should handle API errors properly', async () => {
       const store = useCheckListsStore()
       const errorMessage = 'API Error'
+      const errorDetails = { field: 'building', error: 'Building name is required' }
       const newCheckList = { ...mockCheckList, id: 5 }
 
-      vi.mocked(createCheckListApi).mockRejectedValueOnce(new Error(errorMessage))
+      vi.mocked(createCheckListApi).mockRejectedValueOnce(new FetchError(errorMessage, 400, errorDetails))
 
       await store.createCheckList(newCheckList)
 
       expect(store.isLoading).toBe(false)
-      expect(store.error).toBeInstanceOf(Error)
-      expect(store.error?.message).toBe(errorMessage)
+      expect(store.error).toEqual({
+        message: errorMessage,
+        details: errorDetails,
+      })
     })
   })
 })

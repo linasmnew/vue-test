@@ -19,7 +19,7 @@ fetchCheckList(Number(route.params.id))
       <BackButton path="/checklists" />
     </div>
     <div v-if="isLoading" data-test="loading-indicator">Loading...</div>
-    <div v-else-if="error" data-test="error-message">Error: {{ error.message }}</div>
+    <div v-else-if="error" data-test="error-message">{{ error.message }}</div>
     <div v-else>
       <CheckList :checkList="checkList" data-test="checklist-detail" />
     </div>

@@ -2,12 +2,27 @@ import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import CheckListForm from '../CheckListForm.vue'
 import { Status } from '@/types/checklist'
-import IconSpinner from '../icons/IconSpinner.vue'
+
+// Create stubs for components
+const BaseButtonStub = {
+  name: 'BaseButton',
+  template: '<button :disabled="loading" :class="{ loading }">{{ !loading ? label : "Loading" }}</button>',
+  props: {
+    label: String,
+    loading: Boolean,
+    disabled: Boolean,
+    primary: Boolean,
+    secondary: Boolean,
+    type: String,
+    size: String
+  }
+}
 
 describe('CheckListForm.vue', () => {
   const defaultProps = {
     isLoading: false,
-    onSubmit: vi.fn()
+    onSubmit: vi.fn(),
+    error: null
   }
 
   it('mounts without errors', () => {
@@ -54,7 +69,8 @@ describe('CheckListForm.vue', () => {
     const wrapper = mount(CheckListForm, {
       props: {
         isLoading: false,
-        onSubmit
+        onSubmit,
+        error: null
       }
     })
 
@@ -80,24 +96,119 @@ describe('CheckListForm.vue', () => {
     const wrapper = mount(CheckListForm, {
       props: {
         isLoading: true,
-        onSubmit: vi.fn()
+        onSubmit: vi.fn(),
+        error: null
+      },
+      global: {
+        stubs: {
+          BaseButton: BaseButtonStub
+        }
       }
     })
 
     const submitButton = wrapper.find('[data-test="submit-button"]')
     expect(submitButton.attributes('disabled')).toBeDefined()
-    expect(submitButton.findComponent(IconSpinner).exists()).toBe(true)
-    expect(submitButton.text()).not.toBe('Save')
+    expect(submitButton.classes()).toContain('loading')
+    expect(submitButton.text()).toBe('Loading')
   })
 
   it('shows Save text on button when not loading', () => {
     const wrapper = mount(CheckListForm, {
-      props: defaultProps
+      props: defaultProps,
+      global: {
+        stubs: {
+          BaseButton: BaseButtonStub
+        }
+      }
     })
 
     const submitButton = wrapper.find('[data-test="submit-button"]')
     expect(submitButton.attributes('disabled')).toBeUndefined()
     expect(submitButton.text()).toBe('Save')
-    expect(submitButton.findComponent(IconSpinner).exists()).toBe(false)
+    expect(submitButton.classes('loading')).toBe(false)
+  })
+
+  describe('form validation', () => {
+    it('displays validation errors for date field', () => {
+      const wrapper = mount(CheckListForm, {
+        props: {
+          ...defaultProps,
+          error: {
+            details: {
+              date: ['Date is required', 'Date must be valid']
+            }
+          }
+        }
+      })
+
+      const errorMessages = wrapper.findAll('.error-message p')
+      expect(errorMessages.length).toBe(2)
+      expect(errorMessages[0].text()).toBe('Date is required')
+      expect(errorMessages[1].text()).toBe('Date must be valid')
+    })
+
+    it('displays validation errors for status field', () => {
+      const wrapper = mount(CheckListForm, {
+        props: {
+          ...defaultProps,
+          error: {
+            details: {
+              status: ['Status is required']
+            }
+          }
+        }
+      })
+
+      const errorMessage = wrapper.find('.error-message p')
+      expect(errorMessage.exists()).toBe(true)
+      expect(errorMessage.text()).toBe('Status is required')
+    })
+
+    it('displays validation errors for building field', () => {
+      const wrapper = mount(CheckListForm, {
+        props: {
+          ...defaultProps,
+          error: {
+            details: {
+              building: ['Building name is required']
+            }
+          }
+        }
+      })
+
+      const errorMessage = wrapper.find('.error-message p')
+      expect(errorMessage.exists()).toBe(true)
+      expect(errorMessage.text()).toBe('Building name is required')
+    })
+
+    it('displays validation errors for multiple fields', () => {
+      const wrapper = mount(CheckListForm, {
+        props: {
+          ...defaultProps,
+          error: {
+            details: {
+              building: ['Building name is required'],
+              inspector: ['Inspector name is required'],
+              notes: ['Notes are required']
+            }
+          }
+        }
+      })
+
+      const errorMessages = wrapper.findAll('.error-message p')
+      expect(errorMessages.length).toBe(3)
+      expect(errorMessages[0].text()).toBe('Building name is required')
+      expect(errorMessages[1].text()).toBe('Inspector name is required')
+      expect(errorMessages[2].text()).toBe('Notes are required')
+    })
+
+    it('does not display error messages when no errors exist', () => {
+      const wrapper = mount(CheckListForm, {
+        props: defaultProps
+      })
+
+      const errorMessages = wrapper.findAll('.error-message')
+      expect(errorMessages.length).toBe(0)
+    })
   })
 })

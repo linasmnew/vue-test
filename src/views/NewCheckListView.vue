@@ -13,7 +13,9 @@ const { createCheckList } = store
 
 const handleCreateCheckList = async (formValues: CheckListBase) => {
   await createCheckList(formValues)
-  router.replace('/checklists')
+  if (!error.value) {
+    router.replace('/checklists')
+  }
 }
 </script>
 
@@ -21,12 +23,15 @@ const handleCreateCheckList = async (formValues: CheckListBase) => {
   <div class="back-button-container">
     <BackButton path="/checklists" />
   </div>
-  <CheckListForm :isLoading="isLoading" :onSubmit="handleCreateCheckList" />
-  <div v-if="error" data-test="error-message">Error: {{ error.message }}</div>
+  <CheckListForm :error="error?.details" :isLoading="isLoading" :onSubmit="handleCreateCheckList" />
+  <div v-if="error" class="error-message" data-test="error-message">{{ error.message }}</div>
 </template>
 
 <style scoped>
 .back-button-container {
   margin-bottom: 10px;
+}
+.error-message {
+  color: var(--color-error);
 }
 </style>

@@ -6,6 +6,7 @@ import BaseButton from '@/components/BaseButton.vue'
 const props = defineProps<{
   isLoading: boolean
   onSubmit: (formValues: CheckListBase) => Promise<void>
+  error: Record<string, string[]> | null
 }>()
 
 const formValues = ref({
@@ -28,6 +29,11 @@ const handleCheckListSubmit = async () => {
         <div class="form-group">
           <label for="date">Date</label>
           <input v-model="formValues.date" type="date" id="date" data-test="date-input" required />
+          <div v-if="error?.details?.date" class="error-message">
+            <p v-for="error in error.details.date" :key="error">
+              {{ error }}
+            </p>
+          </div>
         </div>
         <div class="form-group">
           <label for="status">Status</label>
@@ -36,6 +42,11 @@ const handleCheckListSubmit = async () => {
             <option value="Pass">Pass</option>
             <option value="Fail">Fail</option>
           </select>
+          <div v-if="error?.details?.status" class="error-message">
+            <p v-for="error in error.details.status" :key="error">
+              {{ error }}
+            </p>
+          </div>
         </div>
         <div class="form-group">
           <label for="building">Building</label>
@@ -47,6 +58,11 @@ const handleCheckListSubmit = async () => {
             data-test="building-input"
             required
           />
+          <div v-if="error?.details?.building" class="error-message">
+            <p v-for="error in error.details.building" :key="error">
+              {{ error }}
+            </p>
+          </div>
         </div>
         <div class="form-group">
           <label for="inspector">Inspector</label>
@@ -58,6 +74,11 @@ const handleCheckListSubmit = async () => {
             data-test="inspector-input"
             required
           />
+          <div v-if="error?.details?.inspector" class="error-message">
+            <p v-for="error in error.details.inspector" :key="error">
+              {{ error }}
+            </p>
+          </div>
         </div>
         <div class="form-group">
           <label for="notes">Notes</label>
@@ -68,6 +89,11 @@ const handleCheckListSubmit = async () => {
             placeholder="Enter notes"
             required
           ></textarea>
+          <div v-if="error?.details?.notes" class="error-message">
+            <p v-for="error in error.details.notes" :key="error">
+              {{ error }}
+            </p>
+          </div>
         </div>
         <div class="form-group">
           <BaseButton
@@ -99,5 +125,8 @@ const handleCheckListSubmit = async () => {
   border: 1px solid #ccc;
   border-radius: 5px;
   padding: 10px;
+}
+.error-message {
+  color: var(--color-error);
 }
 </style>

@@ -31,6 +31,7 @@ describe('fetchUtil', () => {
 
       expect(mockFetch).toHaveBeenCalledTimes(1)
       expect(mockFetch).toHaveBeenCalledWith(`${API_BASE_URL}${endpoint}`, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -49,6 +50,7 @@ describe('fetchUtil', () => {
       await fetchJSON(endpoint, customOptions)
 
       expect(mockFetch).toHaveBeenCalledWith(`${API_BASE_URL}${endpoint}`, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -76,38 +78,48 @@ describe('fetchUtil', () => {
 
     it('should handle 404 error responses', async () => {
       const endpoint = '/not-found'
+      const errorDetails = 'Resource not found'
 
+      // Clear previous mocks and set up the error response
+      mockFetch.mockReset()
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 404,
-        json: () => Promise.resolve({})
+        json: () => Promise.resolve({ details: errorDetails })
       } as Response)
 
-      await expect(fetchJSON(endpoint)).rejects.toThrow('Not found')
+      await expect(fetchJSON(endpoint)).rejects.toThrow(errorDetails)
     })
 
     it('should handle client error responses', async () => {
       const endpoint = '/bad-request'
+      const errorMessage = 'Invalid request format'
+      const errorDetails = { field: 'email', message: 'Invalid email format' }
 
+      // Clear previous mocks and set up the error response
+      mockFetch.mockReset()
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 400,
-        json: () => Promise.resolve({})
+        json: () => Promise.resolve({ message: errorMessage, details: errorDetails })
       } as Response)
 
-      await expect(fetchJSON(endpoint)).rejects.toThrow('Bad request')
+      await expect(fetchJSON(endpoint)).rejects.toThrow(errorMessage)
     })
 
     it('should handle server error responses', async () => {
       const endpoint = '/server-error'
+      const defaultErrorMessage = 'Something went wrong, please try again later'
 
+      // Clear previous mocks and set up the error response
+      mockFetch.mockReset()
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 500,
         json: () => Promise.resolve({})
       } as Response)
 
-      await expect(fetchJSON(endpoint)).rejects.toThrow('Server error')
+      await expect(fetchJSON(endpoint)).rejects.toThrow(defaultErrorMessage)
     })
   })
 
@@ -165,14 +177,18 @@ describe('fetchUtil', () => {
     it('should handle error responses in POST requests', async () => {
       const endpoint = '/bad-post'
       const data = { name: 'Test' }
+      const errorMessage = 'Invalid data provided'
+      const errorDetails = { field: 'name', message: 'Name too short' }
 
+      // Clear previous mocks and set up the error response
+      mockFetch.mockReset()
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 400,
-        json: () => Promise.resolve({})
+        json: () => Promise.resolve({ message: errorMessage, details: errorDetails })
       } as Response)
 
-      await expect(postJSON(endpoint, data)).rejects.toThrow('Bad request')
+      await expect(postJSON(endpoint, data)).rejects.toThrow(errorMessage)
     })
   })
 })

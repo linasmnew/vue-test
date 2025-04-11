@@ -67,7 +67,7 @@ describe('CheckListsView.vue', () => {
     router.currentRoute.value.query = {}
   })
 
-  const mountWithOptions = (routeQuery = {}) => {
+  const mountWithOptions = (routeQuery = {}, initialState = {}) => {
     router.currentRoute.value.query = routeQuery as Record<string, string>
 
     return mount(CheckListsView, {
@@ -78,7 +78,9 @@ describe('CheckListsView.vue', () => {
             initialState: {
               checkLists: {
                 checkLists: mockCheckLists,
-                isLoading: false
+                isLoading: false,
+                error: null,
+                ...initialState
               }
             }
           }),
@@ -117,6 +119,21 @@ describe('CheckListsView.vue', () => {
     await wrapper.vm.$nextTick()
 
     expect(wrapper.find('[data-test="loading-indicator"]').exists()).toBe(true)
+  })
+
+  it('displays error message when error exists', async () => {
+    const errorMessage = 'Failed to load checklists'
+    const wrapper = mountWithOptions({}, {
+      error: {
+        message: errorMessage,
+        details: { status: ['Invalid status'] }
+      }
+    })
+
+    expect(wrapper.find('[data-test="error-message"]').exists()).toBe(true)
+    expect(wrapper.find('[data-test="error-message"]').text()).toBe(errorMessage)
+    expect(wrapper.find('[data-test="checklists-container"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="loading-indicator"]').exists()).toBe(false)
   })
 
   it('navigates to new checkList page when add button is clicked', async () => {
