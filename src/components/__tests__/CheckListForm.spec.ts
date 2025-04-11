@@ -134,10 +134,8 @@ describe('CheckListForm.vue', () => {
         props: {
           ...defaultProps,
           error: {
-            details: {
               date: ['Date is required', 'Date must be valid']
             }
-          }
         }
       })
 
@@ -152,9 +150,7 @@ describe('CheckListForm.vue', () => {
         props: {
           ...defaultProps,
           error: {
-            details: {
               status: ['Status is required']
-            }
           }
         }
       })
@@ -169,9 +165,7 @@ describe('CheckListForm.vue', () => {
         props: {
           ...defaultProps,
           error: {
-            details: {
               building: ['Building name is required']
-            }
           }
         }
       })
@@ -186,11 +180,9 @@ describe('CheckListForm.vue', () => {
         props: {
           ...defaultProps,
           error: {
-            details: {
               building: ['Building name is required'],
               inspector: ['Inspector name is required'],
               notes: ['Notes are required']
-            }
           }
         }
       })

@@ -29,8 +29,8 @@ const handleCheckListSubmit = async () => {
         <div class="form-group">
           <label for="date">Date</label>
           <input v-model="formValues.date" type="date" id="date" data-test="date-input" required />
-          <div v-if="error?.details?.date" class="error-message">
-            <p v-for="error in error.details.date" :key="error">
+          <div v-if="error?.date" class="error-message">
+            <p v-for="error in error.date" :key="error">
               {{ error }}
             </p>
           </div>
@@ -42,8 +42,8 @@ const handleCheckListSubmit = async () => {
             <option value="Pass">Pass</option>
             <option value="Fail">Fail</option>
           </select>
-          <div v-if="error?.details?.status" class="error-message">
-            <p v-for="error in error.details.status" :key="error">
+          <div v-if="error?.status" class="error-message">
+            <p v-for="error in error.status" :key="error">
               {{ error }}
             </p>
           </div>
@@ -58,8 +58,8 @@ const handleCheckListSubmit = async () => {
             data-test="building-input"
             required
           />
-          <div v-if="error?.details?.building" class="error-message">
-            <p v-for="error in error.details.building" :key="error">
+          <div v-if="error?.building" class="error-message">
+            <p v-for="error in error.building" :key="error">
               {{ error }}
             </p>
           </div>
@@ -72,10 +72,9 @@ const handleCheckListSubmit = async () => {
             id="inspector"
             placeholder="Inspector name"
             data-test="inspector-input"
-            required
           />
-          <div v-if="error?.details?.inspector" class="error-message">
-            <p v-for="error in error.details.inspector" :key="error">
+          <div v-if="error?.inspector" class="error-message">
+            <p v-for="error in error.inspector" :key="error">
               {{ error }}
             </p>
           </div>
@@ -89,8 +88,8 @@ const handleCheckListSubmit = async () => {
             placeholder="Enter notes"
             required
           ></textarea>
-          <div v-if="error?.details?.notes" class="error-message">
-            <p v-for="error in error.details.notes" :key="error">
+          <div v-if="error?.notes" class="error-message">
+            <p v-for="error in error.notes" :key="error">
               {{ error }}
             </p>
           </div>
