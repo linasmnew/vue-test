@@ -79,12 +79,12 @@ describe('fetchUtil', () => {
     it('should handle 404 error responses', async () => {
       const endpoint = '/not-found'
       const message = 'Resource not found'
-
+      const details = { name: ['Resource not found'] }
       mockFetch.mockReset()
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 404,
-        json: () => Promise.resolve({ message })
+        json: () => Promise.resolve({ message, details })
       } as Response)
 
       await expect(fetchJSON(endpoint)).rejects.toThrow(message)
