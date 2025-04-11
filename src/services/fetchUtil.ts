@@ -14,7 +14,7 @@ const handleInvalidFetchResponse = async (response: Response) => {
     throw new FetchError('Something went wrong, please try again later', response.status);
   } else if (response.status === 404) {
     const data = await response.json();
-    throw new FetchError(data.details, response.status);
+    throw new FetchError(data.message, response.status);
   } else if (response.status >= 400 && response.status < 500) {
     const data = await response.json();
     throw new FetchError(data.message, response.status, data.details);

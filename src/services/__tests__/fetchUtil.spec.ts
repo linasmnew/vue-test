@@ -78,7 +78,7 @@ describe('fetchUtil', () => {
 
     it('should handle 404 error responses', async () => {
       const endpoint = '/not-found'
-      const errorDetails = 'Resource not found'
+      const errorDetails = 'Something went wrong, please try again later'
 
       // Clear previous mocks and set up the error response
       mockFetch.mockReset()
