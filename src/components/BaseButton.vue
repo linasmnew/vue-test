@@ -4,7 +4,7 @@ import IconSpinner from './icons/IconSpinner.vue'
 
 const props = withDefaults(
   defineProps<{
-    label: string
+    label?: string
     onClick?: () => void
     primary?: boolean
     secondary?: boolean
@@ -16,6 +16,7 @@ const props = withDefaults(
     size?: 'small' | 'medium' | 'large'
   }>(),
   {
+    label: 'Submit',
     type: 'button',
     dataTestId: 'button',
     loading: false,

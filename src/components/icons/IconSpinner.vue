@@ -1,8 +1,8 @@
 <script setup lang="ts">
 withDefaults(
   defineProps<{
-    width?: number
-    height?: number
+    width?: number | string
+    height?: number | string
     color?: string
   }>(),
   {

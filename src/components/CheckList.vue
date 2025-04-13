@@ -14,7 +14,7 @@ const handleClick = () => {
 </script>
 
 <template>
-  <div class="checklist" @click="handleClick">
+  <div data-test="checklist" class="checklist" @click="handleClick">
     <p><span class="checklist-label">Date:</span>{{ checkList.date }}</p>
     <p>
       <span class="checklist-label">Status:</span>

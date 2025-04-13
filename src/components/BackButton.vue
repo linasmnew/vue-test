@@ -4,7 +4,7 @@ import BaseButton from '@/components/BaseButton.vue'
 
 const props = withDefaults(
   defineProps<{
-    label: string
+    label?: string
     path: string
   }>(),
   {

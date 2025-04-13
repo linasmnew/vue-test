@@ -13,6 +13,7 @@ const { createCheckList } = store
 
 const handleCreateCheckList = async (formValues: CheckListBase) => {
   await createCheckList(formValues)
+
   if (!error.value) {
     router.replace('/checklists')
   }

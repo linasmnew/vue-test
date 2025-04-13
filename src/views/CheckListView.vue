@@ -10,6 +10,7 @@ const route = useRoute()
 const { isLoading, error, checkList } = storeToRefs(store)
 const { fetchCheckList } = store
 
+// i think this should live inside of onMounted
 fetchCheckList(Number(route.params.id))
 </script>
 

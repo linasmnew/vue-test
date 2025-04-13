@@ -12,13 +12,14 @@ const store = useCheckListsStore()
 const router = useRouter()
 const { checkLists, isLoading, error } = storeToRefs(store)
 const { fetchCheckLists } = store
+const statusQuery = route.query.status
 
 watch(selectedStatus, (newValue) => {
   const filters = newValue ? { status: newValue } : {}
 
   router.push({
     path: route.path,
-    query: newValue ? { status: newValue } : {},
+    query: filters,
   })
 
   fetchCheckLists(filters)
@@ -33,8 +34,8 @@ const handleNewCheckListClick = () => {
 }
 
 onMounted(() => {
-  if (route.query.status) {
-    selectedStatus.value = route.query.status as string
+  if (statusQuery) {
+    selectedStatus.value = statusQuery as string
   } else {
     fetchCheckLists()
   }
@@ -64,13 +65,18 @@ onMounted(() => {
       <div v-if="isLoading" data-test="loading-indicator">Loading...</div>
       <div v-else-if="error" data-test="error-message">{{ error.message }}</div>
       <div v-else data-test="checklists-container">
-        <CheckList
-          v-for="checkList in checkLists"
-          :key="checkList.id"
-          :checkList="checkList"
-          data-test="checklist-item"
-          @click="handleCheckListClick(checkList.id)"
-        />
+        <template v-if="checkLists.length > 0">
+          <CheckList
+            v-for="checkList in checkLists"
+            :key="checkList.id"
+            :checkList="checkList"
+            data-test="checklist-item"
+            @click="handleCheckListClick(checkList.id)"
+          />
+        </template>
+        <template v-else>
+          <div data-test="empty-state">No checklists found</div>
+        </template>
       </div>
     </div>
   </div>
