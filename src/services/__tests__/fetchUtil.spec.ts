@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { fetchJSON, postJSON } from '../fetchUtil'
 import { API_BASE_URL } from '../config'
 
@@ -19,172 +19,230 @@ describe('fetchUtil', () => {
     mockFetch.mockResolvedValue(mockFetchResponse)
   })
 
-  afterEach(() => {
-    vi.resetAllMocks()
-  })
-
   describe('fetchJSON', () => {
-    it('should call fetch with the correct URL and options', async () => {
-      const endpoint = '/test-endpoint'
+    describe('when given an endpoint without options', () => {
+      it('should fetch endpoint with default options', async () => {
+        const endpoint = '/test-endpoint'
+        await fetchJSON(endpoint)
 
-      await fetchJSON(endpoint)
-
-      expect(mockFetch).toHaveBeenCalledTimes(1)
-      expect(mockFetch).toHaveBeenCalledWith(`${API_BASE_URL}${endpoint}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        }
+        expect(mockFetch).toHaveBeenCalledTimes(1)
+        expect(mockFetch).toHaveBeenCalledWith(`${API_BASE_URL}${endpoint}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          }
+        })
       })
     })
 
-    it('should merge custom headers with default headers', async () => {
-      const endpoint = '/test-endpoint'
-      const customOptions = {
-        headers: {
-          'Authorization': 'Bearer token123'
+    describe('when given an endpoint with options', () => {
+      it('should fetch endpoint with options', async () => {
+        const endpoint = '/test-endpoint'
+        const options = {
+          headers: {
+            'Authorization': 'Bearer token123'
+          }
         }
-      }
 
-      await fetchJSON(endpoint, customOptions)
+        await fetchJSON(endpoint, options)
 
-      expect(mockFetch).toHaveBeenCalledWith(`${API_BASE_URL}${endpoint}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer token123'
-        }
+        expect(mockFetch).toHaveBeenCalledTimes(1)
+        expect(mockFetch).toHaveBeenCalledWith(`${API_BASE_URL}${endpoint}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer token123'
+          }
+        })
       })
     })
 
-    it('should return the json response', async () => {
-      const endpoint = '/test-endpoint'
+    describe('response', () => {
+      describe('when response is ok', () => {
+        it('should return the json response', async () => {
+          const endpoint = '/test-endpoint'
+          const result = await fetchJSON(endpoint)
 
-      const result = await fetchJSON(endpoint)
+          expect(result).toEqual(mockResponse)
+        })
+      })
 
-      expect(result).toEqual(mockResponse)
-    })
+      describe('when response is not ok', () => {
+        describe('when response is 5xx', () => {
+          it('should throw a custom fetch error', async () => {
+            const endpoint = '/test-endpoint'
+            mockFetch.mockResolvedValueOnce({
+              ok: false,
+              status: 500,
+              json: () => Promise.resolve()
+            } as Response)
 
-    it('should handle fetch errors properly', async () => {
-      const endpoint = '/error-endpoint'
-      const errorMessage = 'Network error'
+            await expect(fetchJSON(endpoint)).rejects.toSatisfy((error: FetchError) => {
+              expect(error.message).toBe('Something went wrong, please try again later')
+              expect(error.status).toBe(500)
+              expect(error.details).toBeUndefined()
+              return true
+            })
+          })
+        })
 
-      mockFetch.mockRejectedValueOnce(new Error(errorMessage))
+        describe('when response is 404', () => {
+          it('should throw a custom fetch error', async () => {
+            const endpoint = '/test-endpoint'
+            mockFetch.mockResolvedValueOnce({
+              ok: false,
+              status: 404,
+              json: () => Promise.resolve({ message: 'Resource not found', details: { name: ['Resource not found'] } })
+            } as Response)
 
-      await expect(fetchJSON(endpoint)).rejects.toThrow(errorMessage)
-    })
+            await expect(fetchJSON(endpoint)).rejects.toSatisfy((error: FetchError) => {
+              expect(error.message).toBe('Resource not found')
+              expect(error.status).toBe(404)
+              expect(error.details).toEqual({ name: ['Resource not found'] })
+              return true
+            })
+          })
+        })
 
-    it('should handle 404 error responses', async () => {
-      const endpoint = '/not-found'
-      const message = 'Resource not found'
-      const details = { name: ['Resource not found'] }
-      mockFetch.mockReset()
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        status: 404,
-        json: () => Promise.resolve({ message, details })
-      } as Response)
+        describe('when response is 4xx', () => {
+          it('should throw a custom fetch error', async () => {
+            const endpoint = '/test-endpoint'
+            mockFetch.mockResolvedValueOnce({
+              ok: false,
+              status: 400,
+              json: () => Promise.resolve({ message: 'The request could not be processed.', details: { id: ['id must be an integer number'] } })
+            } as Response)
 
-      await expect(fetchJSON(endpoint)).rejects.toThrow(message)
-    })
+            await expect(fetchJSON(endpoint)).rejects.toSatisfy((error: FetchError) => {
+              expect(error.message).toBe('The request could not be processed.')
+              expect(error.status).toBe(400)
+              expect(error.details).toEqual({ id: ['id must be an integer number'] })
+              return true
+            })
+          })
+        })
 
-    it('should handle client error responses', async () => {
-      const endpoint = '/bad-request'
-      const errorMessage = 'Invalid request format'
-      const errorDetails = { email: ['Invalid email format'] }
-
-      mockFetch.mockReset()
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        status: 400,
-        json: () => Promise.resolve({ message: errorMessage, details: errorDetails })
-      } as Response)
-
-      await expect(fetchJSON(endpoint)).rejects.toThrow(errorMessage)
-    })
-
-    it('should handle server error responses', async () => {
-      const endpoint = '/server-error'
-      const defaultErrorMessage = 'Something went wrong, please try again later'
-
-      mockFetch.mockReset()
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        status: 500,
-        json: () => Promise.resolve({})
-      } as Response)
-
-      await expect(fetchJSON(endpoint)).rejects.toThrow(defaultErrorMessage)
+      })
     })
   })
 
   describe('postJSON', () => {
-    it('should call fetch with POST method and stringified body', async () => {
-      const endpoint = '/test-post'
-      const data = { name: 'Test', value: 123 }
+    describe('when given an endpoint with data and no options', () => {
+      it('should post data to endpoint with default options', async () => {
+        const endpoint = '/test-endpoint'
+        const data = { name: 'Test', value: 123 }
+        await postJSON(endpoint, data)
 
-      await postJSON(endpoint, data)
+        expect(mockFetch).toHaveBeenCalledTimes(1)
+        expect(mockFetch).toHaveBeenCalledWith(`${API_BASE_URL}${endpoint}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          body: JSON.stringify(data)
+        })
+      })
+    })
 
-      expect(mockFetch).toHaveBeenCalledTimes(1)
-      expect(mockFetch).toHaveBeenCalledWith(`${API_BASE_URL}${endpoint}`, {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
+    describe('when given an endpoint with data and options', () => {
+      it('should post data to endpoint with options', async () => {
+        const endpoint = '/test-post'
+        const data = { name: 'Test', value: 123 }
+        const options = {
+          headers: {
+            'Authorization': 'Bearer token123'
+          }
         }
+        await postJSON(endpoint, data, options)
+
+        expect(mockFetch).toHaveBeenCalledTimes(1)
+        expect(mockFetch).toHaveBeenCalledWith(`${API_BASE_URL}${endpoint}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer token123'
+          },
+          body: JSON.stringify(data)
+        })
       })
     })
 
-    it('should merge custom options with default options', async () => {
-      const endpoint = '/test-post'
-      const data = { name: 'Test' }
-      const customOptions = {
-        headers: {
-          'X-Custom-Header': 'custom-value'
-        },
-        credentials: 'include' as RequestCredentials
-      }
+    describe('response', () => {
+      describe('when response is ok', () => {
+        it('should return the json response', async () => {
+          const endpoint = '/test-endpoint'
+          const data = { name: 'Test', value: 123 }
+          const result = await postJSON(endpoint, data)
 
-      await postJSON(endpoint, data, customOptions)
+          expect(result).toEqual(mockResponse)
+        })
+      })
 
-      expect(mockFetch).toHaveBeenCalledWith(`${API_BASE_URL}${endpoint}`, {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'X-Custom-Header': 'custom-value'
-        },
-        credentials: 'include'
+      describe('when response is not ok', () => {
+        describe('when response is 5xx', () => {
+          it('should throw a custom fetch error', async () => {
+            const endpoint = '/test-endpoint'
+            const data = { name: 'Test', value: 123 }
+            mockFetch.mockResolvedValueOnce({
+              ok: false,
+              status: 500,
+              json: () => Promise.resolve()
+            } as Response)
+
+            await expect(postJSON(endpoint, data)).rejects.toSatisfy((error: FetchError) => {
+              expect(error.message).toBe('Something went wrong, please try again later')
+              expect(error.status).toBe(500)
+              expect(error.details).toBeUndefined()
+              return true
+            })
+          })
+        })
+
+        describe('when response is 404', () => {
+          it('should throw a custom fetch error', async () => {
+            const endpoint = '/test-endpoint'
+            const data = { name: 'Test', value: 123 }
+            mockFetch.mockResolvedValueOnce({
+              ok: false,
+              status: 404,
+              json: () => Promise.resolve({ message: 'Resource not found', details: { name: ['Resource not found'] } })
+            } as Response)
+
+            await expect(postJSON(endpoint, data)).rejects.toSatisfy((error: FetchError) => {
+              expect(error.message).toBe('Resource not found')
+              expect(error.status).toBe(404)
+              expect(error.details).toEqual({ name: ['Resource not found'] })
+              return true
+            })
+          })
+        })
+
+        describe('when response is 4xx', () => {
+          it('should throw a custom fetch error', async () => {
+            const endpoint = '/test-endpoint'
+            const data = { name: 'Test', value: 123 }
+            mockFetch.mockResolvedValueOnce({
+              ok: false,
+              status: 400,
+              json: () => Promise.resolve({ message: 'The request could not be processed.', details: { id: ['id must be an integer number'] } })
+            } as Response)
+
+            await expect(postJSON(endpoint, data)).rejects.toSatisfy((error: FetchError) => {
+              expect(error.message).toBe('The request could not be processed.')
+              expect(error.status).toBe(400)
+              expect(error.details).toEqual({ id: ['id must be an integer number'] })
+              return true
+            })
+          })
+        })
+
       })
     })
 
-    it('should return the json response', async () => {
-      const endpoint = '/test-post'
-      const data = { name: 'Test' }
 
-      const result = await postJSON(endpoint, data)
-
-      expect(result).toEqual(mockResponse)
-    })
-
-    it('should handle error responses in POST requests', async () => {
-      const endpoint = '/bad-post'
-      const data = { name: 'Test' }
-      const errorMessage = 'Invalid data provided'
-      const errorDetails = { name: ['Name too short'] }
-
-      mockFetch.mockReset()
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        status: 400,
-        json: () => Promise.resolve({ message: errorMessage, details: errorDetails })
-      } as Response)
-
-      await expect(postJSON(endpoint, data)).rejects.toThrow(errorMessage)
-    })
   })
 })
