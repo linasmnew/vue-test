@@ -5,6 +5,7 @@ import { useCheckListsStore } from '../stores/checkLists'
 import CheckList from '@/components/CheckList.vue'
 import BackButton from '@/components/BackButton.vue'
 import IconSpinner from '@/components/icons/IconSpinner.vue'
+
 const store = useCheckListsStore()
 const route = useRoute()
 const { isLoading, error, checkList } = storeToRefs(store)

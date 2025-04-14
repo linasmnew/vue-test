@@ -53,18 +53,18 @@ describe('CheckListForm', () => {
 
     describe('errors', () => {
       describe('when there are errors', () => {
-      it('displays the error messages', () => {
-        const wrapper = mount(CheckListForm, {
-          props: { ...props, error: {
-            building: ['Error message 1'],
-            notes: ['Error message 2', 'Error message 3'],
-          } }
-        })
-        const errorMessages = wrapper.findAll('[data-test="error-message"]')
+        it('displays the error messages', () => {
+          const wrapper = mount(CheckListForm, {
+            props: { ...props, error: {
+              building: ['Error message 1'],
+              notes: ['Error message 2', 'Error message 3'],
+            } }
+          })
+          const errorMessages = wrapper.findAll('[data-test="error-message"]')
 
-        expect(errorMessages.length).toBe(2)
-        expect(errorMessages[0].text()).toContain('Error message 1')
-        expect(errorMessages[1].text()).toContain('Error message 2')
+          expect(errorMessages.length).toBe(2)
+          expect(errorMessages[0].text()).toContain('Error message 1')
+          expect(errorMessages[1].text()).toContain('Error message 2')
           expect(errorMessages[1].text()).toContain('Error message 3')
         })
       })
@@ -72,12 +72,11 @@ describe('CheckListForm', () => {
       describe('when there are no errors', () => {
         it('does not display error messages', () => {
           const wrapper = mount(CheckListForm, {
-          props
-        })
+            props
+          })
           expect(wrapper.findAll('[data-test="error-message"]').length).toBe(0)
         })
       })
     })
   })
-
 })

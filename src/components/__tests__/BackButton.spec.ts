@@ -43,11 +43,11 @@ describe('BackButton', () => {
       it('navigates to the previous page', () => {
         mockHistoryLength(2)
         const wrapper = mount(BackButton, {
-        props
-      })
-      const button = wrapper.findComponent({name: 'BaseButton'})
-
+          props
+        })
+        const button = wrapper.findComponent({name: 'BaseButton'})
         button.trigger('click')
+
         expect(mockRouter.go).toHaveBeenCalledWith(-1)
       })
     })
@@ -57,10 +57,10 @@ describe('BackButton', () => {
         mockHistoryLength(1)
         const wrapper = mount(BackButton, {
           props
-      })
-      const button = wrapper.findComponent({name: 'BaseButton'})
+        })
+        const button = wrapper.findComponent({name: 'BaseButton'})
+        button.trigger('click')
 
-      button.trigger('click')
         expect(mockRouter.push).toHaveBeenCalledWith(props.path)
       })
     })
