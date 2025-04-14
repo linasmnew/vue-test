@@ -152,6 +152,7 @@ describe('CheckListsView.vue', () => {
       it('renders loading indicator', () => {
         const wrapper = mountWithOptions({ isLoading: true })
         expect(wrapper.find('[data-test="loading-indicator"]').exists()).toBe(true)
+        expect(wrapper.findComponent({ name: 'IconSpinner' }).exists()).toBe(true)
       })
     })
 

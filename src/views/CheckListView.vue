@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router'
 import { useCheckListsStore } from '../stores/checkLists'
 import CheckList from '@/components/CheckList.vue'
 import BackButton from '@/components/BackButton.vue'
-
+import IconSpinner from '@/components/icons/IconSpinner.vue'
 const store = useCheckListsStore()
 const route = useRoute()
 const { isLoading, error, checkList } = storeToRefs(store)
@@ -18,7 +18,9 @@ fetchCheckList(Number(route.params.id))
     <div class="back-button-container">
       <BackButton path="/checklists" />
     </div>
-    <div v-if="isLoading" data-test="loading-indicator">Loading...</div>
+    <div v-if="isLoading" data-test="loading-indicator">
+      <IconSpinner />
+    </div>
     <div v-else-if="error" data-test="error-message">{{ error.message }}</div>
     <div v-else>
       <CheckList :checkList="checkList" data-test="checklist-detail" />

@@ -5,6 +5,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useCheckListsStore } from '../stores/checkLists'
 import CheckList from '@/components/CheckList.vue'
 import BaseButton from '@/components/BaseButton.vue'
+import IconSpinner from '@/components/icons/IconSpinner.vue'
 
 const route = useRoute()
 const selectedStatus = ref('')
@@ -62,7 +63,9 @@ onMounted(() => {
       </div>
     </div>
     <div class="checklists-container">
-      <div v-if="isLoading" data-test="loading-indicator">Loading...</div>
+      <div v-if="isLoading" data-test="loading-indicator">
+        <IconSpinner />
+      </div>
       <div v-else-if="error" data-test="error-message">{{ error.message }}</div>
       <div v-else data-test="checklists-container">
         <template v-if="checkLists.length > 0">
